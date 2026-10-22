@@ -1,0 +1,39 @@
+% Methods
+\subsection*{Software}
+TreeData (v0.3.1) extends the AnnData object with \code{obst} and \code{vart} fields, which store lineage trees as \code{networkx} directed graphs \citep{hagberg2008networkx} aligned to the observations and variables. Pycea (v0.4.0) provides tools (\code{pycea.tl}), plotting (\code{pycea.pl}), preprocessing (\code{pycea.pp}), and data retrieval (\code{pycea.get}) modules that operate on TreeData objects. Analyses used Python 3.12, Scanpy~\cite{wolf2018scanpy} 1.12 and AnnData 0.13. Trees are plotted with \code{pycea.pl.branches}, \code{pycea.pl.nodes} and \code{pycea.pl.annotation}, which draw the branches, nodes and leaf annotations of a tree in rectangular or polar coordinates.
+
+\subsection*{Datasets}
+\paragraph{Simulated data}
+The lineage trees, characters and gene expression in Figures~1 and~2 were simulated with Cassiopeia~\cite{jones2020cassiopeia} (v3.0.0). Neighbor-joining and UPGMA trees were reconstructed from the simulated characters with \code{cassiopeia.solver.nj} and \code{cassiopeia.solver.upgma}.
+
+\paragraph{Mouse embryo} We analyzed embryo E9.5-R1 from the PEtracer mouse embryo atlas~\cite{colgan2026}. Annotations, UMAP coordinates and trees were loaded with \code{pycea.datasets.colgan26}. Gene expression counts were normalized to 10,000 counts per cell and log1p-transformed, and the 5,000 highly variable genes defined in the atlas were analyzed.
+
+\paragraph{Tumor} We analyzed spatially resolved lineage tracing of 4T1 tumors~\cite{koblan2025} (M3-T1), loaded with \code{pycea.datasets.koblan25}. Analyses were restricted to the three tumor sections that contain lineage-traced cells.
+
+\subsection*{Ancestral linkage}
+\code{pycea.tl.ancestral_linkage} quantifies how closely related cells are to a target set of cells. Let $d_{\mathrm{LCA}(i,j)}$ be the depth (time) of the lowest common ancestor of cells $i$ and $j$, so that larger values indicate more recent common ancestry. For a target category $T$, the linkage of cell $i$ to $T$ is the depth of its most recent common ancestor with the nearest target cell,
+\begin{equation}
+  s_i(T) = \max_{j \in T,\, j \neq i} d_{\mathrm{LCA}(i,j)} .
+\end{equation}
+Because tree topology and category size affect this value, scores are normalized by subtracting their mean under random permutation of the category labels, $\tilde{s}_i(T) = s_i(T) - \mathbb{E}_{\mathrm{perm}}[s_i(T)]$, so that 0 is the chance expectation and positive values indicate cells more closely related to $T$ than expected. Per-cell scores to neural crest (Figure~3D) were computed with \code{groupby="lineage"} and \code{target="Neural crest"}. In pairwise mode (\code{target=None}; Figure~3E), the linkage from a source category $a$ to a target category $b$ is the mean of the normalized scores over the source cells,
+\begin{equation}
+  M_{ab} = \frac{1}{|a|} \sum_{i \in a} \tilde{s}_i(b),
+\end{equation}
+and the directional matrix is symmetrized by averaging, $(M_{ab} + M_{ba})/2$. Pairwise linkage was computed between lineages and visualized with \code{pycea.pl.ancestral_linkage}.
+
+\subsection*{Gene heritability}
+Heritability of gene expression was estimated as its autocorrelation over the lineage tree. \code{pycea.tl.tree_neighbors} (\code{n_neighbors=5}, \code{depth_key="time"}) identified the five nearest relatives of each cell by tree path distance, $d_i + d_j - 2\,d_{\mathrm{LCA}(i,j)}$, and stored them as a sparse connectivity matrix with weights $w_{ij}$. \code{pycea.tl.autocorr} (\code{method="moran"}) then computed Moran's I for each gene,
+\begin{equation}
+  I = \frac{N}{W}\,\frac{\sum_{i,j} w_{ij}\,(x_i - \bar{x})(x_j - \bar{x})}{\sum_i (x_i - \bar{x})^2},
+  \qquad W = \sum_{i,j} w_{ij},
+\end{equation}
+where $x_i$ is the expression of the gene in cell $i$, $\bar{x}$ its mean and $N$ the number of cells. Values near 1 indicate that closely related cells have similar expression (heritable), and values near 0 indicate no relationship to the lineage. Genes were ranked by $I$ (Figure~3F) and the four highest are shown (Figure~3G).
+
+\subsection*{Clades and fitness}
+Clades (Figure~4A, B) were defined with \code{pycea.tl.clades} (\code{depth=5}, \code{depth_key="time"}): each branch alive at day 5 defines a clade, and all of its descendants inherit its label. The number of extant lineages in each clade over time (Figure~4C) was computed with \code{pycea.tl.n_extant} as the number of branches spanning each of 20 time points, grouped by clade, and plotted with \code{pycea.pl.n_extant}. Relative fitness of each cell (Figure~4D, E) was estimated from the tree topology and branch lengths with \code{pycea.tl.fitness} (\code{method="sbd"}), which implements the selection-biased diffusion algorithm of Neher et al.~\cite{neher2014}: messages are passed up and down the tree to infer the posterior distribution of fitness at each node, and the posterior mean is reported (diffusion constant $\gamma = 0.2$). Genes associated with fitness (Figure~4F) were identified by the Pearson correlation between the fitness and expression of each gene across cells with both measurements; \textit{Cldn4}, the most positively correlated gene, is shown alongside fitness on the tree and in space (Figure~4G, H). Spatial panels (Figure~4B, E, H) plot the measured cell coordinates with Scanpy.
+
+\subsection*{Benchmarks}
+Lineage trees of $10^2$ to $10^5$ cells were simulated with Cassiopeia (v3.0.0). TreeData and AnnData objects with simulated sparse expression of 20,000 genes (5\% nonzero entries) were written to and read from disk (\code{.h5td} and \code{.h5ad}), and sliced to a random 10\% of cells, which includes pruning the tree and materializing a copy. Tree plotting time (\code{pycea.pl.tree}, rectangular layout) was compared with Cassiopeia 2.1.0 (\code{cassiopeia.pl.plot_matplotlib}) and includes rendering the figure canvas. The run time of \code{pycea.pp.add_depth}, \code{pycea.tl.clades}, \code{pycea.tl.ancestral_states}, \code{pycea.tl.tree_neighbors} (10 neighbors), \code{pycea.tl.ancestral_linkage}, \code{pycea.tl.fitness} (\code{method="lbi"}) and \code{pycea.tl.expansion_test} was measured on trees with five random categories. Each measurement is the median of three runs (a single run if the first took longer than 30\,s), on a single Slurm node with two CPU cores.
+
+\subsection*{Use of large language models}
+Claude and ChatGPT were used to assist with writing, analysis, and code generation. The authors carefully review all model outputs, and take full responsibility for the content of the manuscript.

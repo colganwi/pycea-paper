@@ -1,0 +1,66 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx,booktabs,xcolor,authblk,lineno,amsmath,amssymb}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+\urlstyle{tt}
+\newcommand{\code}[1]{\nolinkurl{#1}}  % monospace code that can break across lines
+\graphicspath{{figures/}}
+\emergencystretch=2em  % let TeX loosen lines rather than overflow the margin
+\newcommand{\todo}[1]{{\color{red}[#1]}}  % marks placeholders in red
+% float pages: start each figure at the top of its page (default centers it vertically)
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{8pt plus 1fil}
+\setlength{\@fpbot}{0pt plus 1fil}
+\makeatother
+
+% author block: larger author names, compact footnote-size affiliations, tighter spacing
+\renewcommand\Authfont{\normalsize}
+\renewcommand\Affilfont{\footnotesize}
+\renewcommand\Authsep{, }
+\renewcommand\Authand{ and }
+\renewcommand\Authands{, and }
+\setlength{\affilsep}{0.6em}
+\title{Pycea: a scverse toolkit for single-cell lineage tracing analysis}
+\author[1,2]{William~N. Colgan}
+\author[3]{Eric Weine}
+\author[2,4]{Matthew~G. Jones}
+\author[1,2,4,5]{Jonathan~S. Weissman}
+\author[6,*]{Nir~Yosef}
+\affil[1]{Whitehead Institute for Biomedical Research, Cambridge, MA, USA}
+\affil[2]{Department of Biology, MIT, Cambridge, MA, USA}
+\affil[3]{Department of Electrical Engineering and Computer Sciences, MIT, Cambridge, MA, USA}
+\affil[4]{David H. Koch Center for Integrative Cancer Research, MIT, Cambridge, MA, USA}
+\affil[5]{Howard Hughes Medical Institute, Chevy Chase, MD 20815, USA}
+\affil[6]{Department of Systems Immunology, Weizmann Institute of Science, 7610001 Rehovot, Israel}
+\affil[*]{Corresponding author: Nir Yosef, nir.yosef@weizmann.ac.il}
+\date{\small Email addresses: WNC, wcolgan@wi.mit.edu; EW, eric\_weine@dfci.harvard.edu; MGJ, mgjones@mit.edu; JSW, weissman@wi.mit.edu; NY, nir.yosef@weizmann.ac.il}
+
+\begin{document}
+\maketitle
+\linenumbers
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\noindent\textbf{Keywords:} lineage tracing, live-cell tracking, single-cell, scRNA-seq, scverse, AnnData
+
+\section*{Background}\input{sections/introduction}
+\section*{Results}\input{sections/results}
+\section*{Discussion}\input{sections/discussion}
+\section*{Conclusions}\input{sections/conclusions}
+\section*{Methods}\input{sections/methods}
+
+\section*{Declarations}
+\input{sections/declarations}
+
+\bibliographystyle{vancouver}
+\bibliography{references}
+
+\clearpage
+\input{sections/figures}
+
+\end{document}
