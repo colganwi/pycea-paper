@@ -34,21 +34,6 @@ conda env create -f environment.yml
 conda activate pycea-paper
 ```
 
-- **Lean by design:** `environment.yml` lists only what the scripts in this repository need. It does not need
-  everything that is installed in the environment used for the mouse embryo (devmap) paper, so do not try to
-  recreate that environment here.
-- **Cassiopeia 3.0.0** is not on PyPI under that version. It is installed from GitHub using the branch of the same
-  name (this is already a line in `environment.yml`). To install it by hand:
-  ```bash
-  pip install "git+https://github.com/YosefLab/Cassiopeia.git@3.0.0"
-  ```
-  The paper figures were made with commit `bb01370` of that branch; the branch may move, so pin the commit
-  (`...Cassiopeia.git@bb013703a99cb2e3ba32832394d024139e0b31f9`) for an exact rebuild.
-- **Pycea 0.4.0 and TreeData 0.3.1** are installed from PyPI (`pycea-lineage`, `treedata`).
-- **Fig. S1B** compares plotting with Cassiopeia **2.1.0**, which needs its own environment
-  (`pip install cassiopeia-lineage==2.1.0` in a separate conda env). All other figures use the environment above.
-- **Optional, for the Word version of the manuscript** (`manuscript/make_docx.py`): `conda install -c conda-forge pandoc poppler`.
-
 ## Figures
 
 | Figure | Content | Data | Scripts |
