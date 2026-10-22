@@ -1,0 +1,26 @@
+# Environment for the code in this repository (figures, benchmarks, manuscript build).
+#   conda env create -f environment.yml && conda activate pycea-paper
+# Only what the scripts here need is listed; it is deliberately smaller than the environment used for the
+# mouse embryo (devmap) paper. Cassiopeia 3.0.0 is installed from GitHub (branch "3.0.0"), not from PyPI.
+name: pycea-paper
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.12
+  - pip
+  - cairo          # system library used by cairosvg to convert the assembled figures to PDF
+  - tectonic       # LaTeX engine used by manuscript/Makefile
+  - pip:
+      - pycea-lineage==0.4.0
+      - treedata==0.3.1
+      - anndata==0.13.4
+      - scanpy==1.12.4
+      - matplotlib==3.11.2
+      - leidenalg           # Leiden clustering (Fig. 1 and 2)
+      - igraph
+      - umap-learn
+      - cairosvg
+      - pillow
+      # Cassiopeia 3.0.0: install from the GitHub branch of the same name (commit bb01370 was used for the paper)
+      - git+https://github.com/YosefLab/Cassiopeia.git@3.0.0

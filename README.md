@@ -1,8 +1,7 @@
-# pycea-paper
+# Pycea: a scverse toolkit for single-cell lineage tracing analysis
 
-Code, figures and manuscript source for the Pycea / TreeData methods paper:
+Code, figures and manuscript source for the Pycea and TreeData methods paper.
 
-> **Pycea: a scverse toolkit for single-cell lineage tracing analysis**
 > William N. Colgan, Eric Weine, Matthew G. Jones, Jonathan S. Weissman, Nir Yosef
 
 - [Pycea](https://github.com/YosefLab/pycea): lineage tracing analysis and visualization (`pycea-lineage` on PyPI)
@@ -25,6 +24,30 @@ scripts/            common.py (paths, style, SVG assembly helpers) and one folde
 data/               small result tables used by the plotting scripts (see "Data" below)
 manuscript/         LaTeX source (main.tex, sections/, references.bib, figures/)
 ```
+
+## Environment
+
+Create the conda environment used for the figures, benchmarks and manuscript build:
+
+```bash
+conda env create -f environment.yml
+conda activate pycea-paper
+```
+
+- **Lean by design:** `environment.yml` lists only what the scripts in this repository need. It does not need
+  everything that is installed in the environment used for the mouse embryo (devmap) paper, so do not try to
+  recreate that environment here.
+- **Cassiopeia 3.0.0** is not on PyPI under that version. It is installed from GitHub using the branch of the same
+  name (this is already a line in `environment.yml`). To install it by hand:
+  ```bash
+  pip install "git+https://github.com/YosefLab/Cassiopeia.git@3.0.0"
+  ```
+  The paper figures were made with commit `bb01370` of that branch; the branch may move, so pin the commit
+  (`...Cassiopeia.git@bb013703a99cb2e3ba32832394d024139e0b31f9`) for an exact rebuild.
+- **Pycea 0.4.0 and TreeData 0.3.1** are installed from PyPI (`pycea-lineage`, `treedata`).
+- **Fig. S1B** compares plotting with Cassiopeia **2.1.0**, which needs its own environment
+  (`pip install cassiopeia-lineage==2.1.0` in a separate conda env). All other figures use the environment above.
+- **Optional, for the Word version of the manuscript** (`manuscript/make_docx.py`): `conda install -c conda-forge pandoc poppler`.
 
 ## Figures
 
@@ -78,7 +101,5 @@ Only the small result tables listed in `.gitignore` (`data/fig3_moran.csv`, `dat
 - **Cluster-specific paths:** the `Makefile`, `.sbatch` files and `scripts/fig3/prepare_moran.py` call a conda
   environment and read the embryo expression data from absolute paths on the authors' Slurm cluster
   (`/lab/solexa_weissman/...`). Edit these (or set `PY=...` for `make`) to run elsewhere.
-- **Environment:** Python 3.12, Scanpy 1.12, AnnData 0.13, Pycea 0.4.0, TreeData 0.3.1, and Cassiopeia 3.0.0
-  (GitHub `3.0.0` branch). The Cassiopeia 2.1.0 plotting comparison (Fig. S1B) needs a separate environment.
 - Several analyses (ancestral linkage and Moran's I on about 260,000 cells) take roughly 10 minutes and tens to hundreds of
   GB of memory; run them on a compute node.
